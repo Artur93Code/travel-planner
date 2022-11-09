@@ -1,8 +1,19 @@
 package com.example.TravelPlanner.security.config;
 
+import com.example.TravelPlanner.Event.Event;
+import com.example.TravelPlanner.Event.EventRepository;
+import com.example.TravelPlanner.Event.EventService;
+import com.example.TravelPlanner.Event.EventType;
+import com.example.TravelPlanner.appuser.AppUser;
+import com.example.TravelPlanner.appuser.AppUserRepository;
+import com.example.TravelPlanner.appuser.AppUserRole;
 import com.example.TravelPlanner.appuser.AppUserService;
 import com.example.TravelPlanner.security.CustomAuthenticationProvider;
+import com.example.TravelPlanner.travel.Travel;
+import com.example.TravelPlanner.travel.TravelRepository;
+import com.example.TravelPlanner.travel.TravelService;
 import lombok.AllArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,6 +22,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 @AllArgsConstructor
@@ -86,5 +101,54 @@ public class WebSecurityConfig /*extends WebSecurityConfigurerAdapter*/ {
         authenticationManagerBuilder.authenticationProvider(customAuthenticationProvider);
         return authenticationManagerBuilder.build();
 
+    }
+
+    //Create pre-defined entities - users, travels and events
+    @Bean
+    CommandLineRunner createTestUsers(AppUserRepository appUserRepository,
+                                      TravelRepository travelRepository,
+                                      EventRepository eventRepository,
+                                      BCryptPasswordEncoder bCryptPasswordEncoder,
+                                      EventService eventService,
+                                      TravelService travelService)
+    {
+        return args -> {
+            AppUser testUser = new AppUser("Krzysztof","Kowalski", "email@wp.pl",bCryptPasswordEncoder.encode("test"), AppUserRole.USER);
+            testUser.setEnabled(true);
+            appUserRepository.save(testUser);
+
+            Travel testTravel = new Travel("Journey to London", "My first journey to UK with my friends",testUser);
+            travelRepository.save(testTravel);
+
+            Event testEvent = new Event("Visit on London Brigde",
+                    EventType.SIGHTSEEING,
+                    LocalDateTime.now(),
+                    LocalDateTime.now().plusHours(2),
+                    130d,
+                    testTravel);
+            eventRepository.save(testEvent);
+            testTravel.setStartDate(eventService);
+            //travelService.updateStartDate(testTravel.getId());
+            testTravel.setEndDate(eventService);
+/*            List<Event> eventList = testTravel.getEvents();
+            if(eventList==null)
+            {
+                eventList = new ArrayList<>();
+            }
+            eventList.add(testEvent);
+            try {
+                travelRepository.updateListEvents(eventList, testTravel.getId());
+            }
+            catch (Exception e)
+            {
+                System.out.println(e);
+            }*/
+            //travelRepository.save(testTravel);
+
+            System.out.println("TEST: event  data start "+testEvent.getStartDate());
+            System.out.println("TEST: travel title "+testEvent.getTravel().getTitle());
+            System.out.println("TEST: travel data start "+testTravel.getStartDate());
+            System.out.println("TEST: travel data end "+testTravel.getEndDate());
+        };
     }
 }

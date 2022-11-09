@@ -1,7 +1,10 @@
 package com.example.TravelPlanner.appuser;
 
+import com.example.TravelPlanner.Event.EventService;
 import com.example.TravelPlanner.registration.RegistrationRequest;
 import com.example.TravelPlanner.registration.RegistrationService;
+import com.example.TravelPlanner.travel.Travel;
+import com.example.TravelPlanner.travel.TravelService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -15,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -24,6 +28,8 @@ public class AppUserController {
 
     private final RegistrationService registrationService;
     private final AppUserService appUserService;
+    private final EventService eventService;
+    private final TravelService travelService;
 
     @GetMapping(path = "/registration")
     public String showRegisterPage() {return "register";}
@@ -74,6 +80,14 @@ public class AppUserController {
         String email = authentication.getPrincipal().toString();
         UserDetails currentUser = appUserService.loadUserByUsername(email);
         model.addAttribute("user", currentUser);
+
+        List<Travel> travelList = travelService.getAllTravels(((AppUser) currentUser).getId());
+        for(Travel travel : travelList)
+        {
+            travel.setStartDate(eventService);
+            travel.setEndDate(eventService);
+        }
+        model.addAttribute("travels", travelList);
         return "home";
     }
 
