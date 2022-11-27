@@ -1,5 +1,7 @@
 package com.example.TravelPlanner.appuser;
 
+import com.example.TravelPlanner.Event.Event;
+import com.example.TravelPlanner.travel.Travel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Getter
 @Setter
@@ -38,6 +41,9 @@ public class AppUser implements UserDetails {
     private AppUserRole appUserRole;
     private Boolean locked = false;
     private Boolean enabled = false;
+
+    @OneToMany(mappedBy = "appUser")
+    private List<Travel>  travels;
 
     public AppUser(String firstName, String lastName, String email, String password, AppUserRole appUserRole/*, Boolean locked, Boolean enabled*/) {
         this.firstName = firstName;

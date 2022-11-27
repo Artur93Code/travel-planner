@@ -5,6 +5,7 @@ import com.example.TravelPlanner.Event.EventRepository;
 import com.example.TravelPlanner.Event.EventService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,8 +17,19 @@ public class TravelService {
     private final TravelRepository travelRepository;
     private final EventService eventService;
 
+
     public List<Travel> getAllTravels(Long appUserId){
         return  travelRepository.findByAppUserId(appUserId);
+    }
+
+    public void  setAllStartEndTravelDates(Long appUserId)
+    {
+        List<Travel> travelList = travelRepository.findByAppUserId(appUserId);
+        for (Travel travel : travelList)
+        {
+            travel.setStartDate();
+            travel.setEndDate();
+        }
     }
 
     public void updateStartDate(Long travelId){

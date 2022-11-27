@@ -50,8 +50,8 @@ public class Travel {
     @JoinColumn(nullable = false, name = "app_user_id")
     private AppUser appUser;
 
-/*    @OneToMany(mappedBy = "travel")
-    private List<Event> events;*/
+    @OneToMany(mappedBy = "travel"/*,fetch = FetchType.EAGER*/)
+    private List<Event> events;
 
     public Travel(String title, String description, AppUser appUser) {
         this.title = title;
@@ -66,14 +66,14 @@ public class Travel {
         this.events = events;
     }*/
 
-    public void setStartDate(EventService eventService) {
-        List<Event> eventList = eventService.getAllEvents(id);
+    public void setStartDate() {
         LocalDateTime startTravelDate = null;
-        for (Event event : eventList)
-        {
-            if((startTravelDate==null) || (event.getStartDate().isBefore(startTravelDate)))
-            {
-                startTravelDate = event.getStartDate();
+        if(this.getEvents()!=null) {
+            List<Event> eventList = this.getEvents();
+            for (Event event : eventList) {
+                if ((startTravelDate == null) || (event.getStartDate().isBefore(startTravelDate))) {
+                    startTravelDate = event.getStartDate();
+                }
             }
         }
         this.startDate = startTravelDate;
@@ -87,15 +87,19 @@ public class Travel {
         return endDate;
     }
 
-    public void setEndDate(EventService eventService) {
-        List<Event> eventList = eventService.getAllEvents(id);
+    public void setEndDate() {
+        //List<Event> eventList = eventService.getAllEvents(id);
         LocalDateTime endTravelDate = null;
-        for (Event event : eventList)
-        {
-            if((endTravelDate==null) || (event.getEndDate().isBefore(endTravelDate)))
+        if(this.getEvents()!=null) {
+            List<Event> eventList = this.getEvents();
+            for (Event event : eventList)
             {
-                endTravelDate = event.getEndDate();
+                if((endTravelDate==null) || (event.getEndDate().isBefore(endTravelDate)))
+                {
+                    endTravelDate = event.getEndDate();
+                }
             }
+
         }
         this.endDate = endTravelDate;
     }
@@ -104,11 +108,11 @@ public class Travel {
         this.totalCost = totalCost;
     }
 
-/*    public List<Event> getEvents() {
+    public List<Event> getEvents() {
         return events;
     }
 
     public void setEvents(List<Event> events) {
         this.events = events;
-    }*/
+    }
 }

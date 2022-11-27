@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -76,18 +79,20 @@ public class AppUserController {
 
     @GetMapping(path = "/home")
     public String showHomePage(Authentication authentication, Model model){
-        authentication = SecurityContextHolder.getContext().getAuthentication();
+        authentication = SecurityContextHolder.getContext().getAuthentication(); //get data about logged user
         String email = authentication.getPrincipal().toString();
         UserDetails currentUser = appUserService.loadUserByUsername(email);
+        AppUser user = (AppUser) currentUser;
+        travelService.setAllStartEndTravelDates(((AppUser)currentUser).getId());
         model.addAttribute("user", currentUser);
 
-        List<Travel> travelList = travelService.getAllTravels(((AppUser) currentUser).getId());
+/*        List<Travel> travelList = travelService.getAllTravels(((AppUser) currentUser).getId());
         for(Travel travel : travelList)
         {
             travel.setStartDate(eventService);
-            travel.setEndDate(eventService);
+            travel.setEndDate();
         }
-        model.addAttribute("travels", travelList);
+        model.addAttribute("travels", travelList);*/
         return "home";
     }
 
