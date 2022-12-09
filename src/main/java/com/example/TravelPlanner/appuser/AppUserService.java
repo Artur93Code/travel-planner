@@ -3,6 +3,8 @@ package com.example.TravelPlanner.appuser;
 import com.example.TravelPlanner.registration.token.ConfirmationToken;
 import com.example.TravelPlanner.registration.token.ConfirmationTokenService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,6 +30,15 @@ public class AppUserService implements UserDetailsService {
         return appUserRepository.findByEmail(email).orElseThrow(
                 ()-> new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, email))
         );
+    }
+
+    public AppUser getLoggedUser(Authentication authentication)
+    {
+        authentication = SecurityContextHolder.getContext().getAuthentication(); //get data about logged user
+        String email = authentication.getPrincipal().toString();
+        UserDetails currentUser = loadUserByUsername(email);
+        AppUser user = (AppUser) currentUser;
+        return user;
     }
 
     public String signUpUser(AppUser appUser) {

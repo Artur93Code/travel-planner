@@ -3,6 +3,7 @@ package com.example.TravelPlanner.travel;
 import com.example.TravelPlanner.Event.Event;
 import com.example.TravelPlanner.Event.EventRepository;
 import com.example.TravelPlanner.Event.EventService;
+import com.example.TravelPlanner.appuser.AppUser;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,17 +23,18 @@ public class TravelService {
         return  travelRepository.findByAppUserId(appUserId);
     }
 
-    public void  setAllStartEndTravelDates(Long appUserId)
+    public void  setAllTransientTraveParams(Long appUserId)
     {
         List<Travel> travelList = travelRepository.findByAppUserId(appUserId);
         for (Travel travel : travelList)
         {
             travel.setStartDate();
             travel.setEndDate();
+            travel.setTotalCost();
         }
     }
 
-    public void updateStartDate(Long travelId){
+/*    public void updateStartDate(Long travelId){
         List<Event> eventList = eventService.getAllEvents(travelId);
         LocalDateTime startTravelDate = null;
         for (Event event : eventList)
@@ -43,5 +45,11 @@ public class TravelService {
             }
         }
         //travelRepository.updateStartDate(startTravelDate, travelId);
+    }*/
+
+    public void addTravel(String title, String description, AppUser appUser)
+    {
+        Travel newTravel = new Travel(title, description, appUser);
+        travelRepository.save(newTravel);
     }
 }

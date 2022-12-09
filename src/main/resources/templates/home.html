@@ -17,10 +17,12 @@
   <body>
         <div class="row justify-content-center">
             <div class="col-sm-auto">
-                <h1 style="text-align: center;">Welcome!</h1>
                 <div sec:authorize="isAuthenticated()">
-                    Logged as <span th:text="${user.firstName}"></span>
+                    <h1 style="text-align: center;">Welcome <span th:text="${user.firstName}"></span>!</h1>
                     <br>
+                    <div class="text-center">
+                        <a href="" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalAddTravelForm">Add a Travel</a>
+                    </div>
 <!--                    <tr th:each="travel: ${user.travels}">
                         <td th:text="${travel.title}" />
                         <td th:text="${travel.description}" />
@@ -31,11 +33,12 @@
                                 <h5 class="mb-1" th:text="${travel.title}"></h5>
                                 <small class="text-muted">
                                     <span th:text="${travel.StartDate}"></span>
+                                    <br>
                                     <span th:text="${travel.EndDate}"></span>
                                 </small>
                             </div>
                             <p class="mb-1" th:text="${travel.description}"></p>
-                            <small class="text-muted">Donec id elit non mi porta.</small>
+                            <small class="text-muted"th:text="${travel.TotalCost}"></small>
                         </a>
                     </div>
 
@@ -50,23 +53,41 @@
                 <form th:action="@{/logout}" method="post">
                     <button type="submit" class="btn btn-secondary">Logout</button>
                 </form>
-<!--                <div style="border: 3px solid gray;">
-                <form action="/login" method="post" style="margin: 10px;">
-                    <h2 class="form-signin-heading">Please sign in</h2>
-                      <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="Email">
-                      </div>
-                      <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Password">
-                      </div>
-                    <button type="submit" class="btn btn-primary">Sign in</button>
-                  </form>
-                </div>-->
             </div>
         </div>
-    </div>
+
+        <!-- ADD TRAVEL MODAL FORM START-->
+        <div class="modal fade" id="modalAddTravelForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add a Travel</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="/travel/add" method="post">
+                            <div class="form-group">
+                                <label for="title" class="col-form-label">Title:</label>
+                                <input type="text" class="form-control" id="title" name="title">
+                            </div>
+                            <div class="form-group">
+                                <label for="description" class="col-form-label">Description:</label>
+                                <textarea class="form-control" id="description" name="description"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add a Travel</button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Send message</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ADD TRAVEL MODAL FORM END-->
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

@@ -1,31 +1,31 @@
 package com.example.TravelPlanner.login;
 
-import com.example.TravelPlanner.security.CustomAuthenticationProvider;
 import lombok.AllArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.WebAttributes;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
-@RestController
-@RequestMapping(path = "api/login")
+@Controller
 @AllArgsConstructor
 public class LoginController {
 
-
-    private final CustomAuthenticationProvider customAuthenticationProvider;
-
-    @GetMapping
-    public String login(@RequestBody Map<String, String> request){
-        try{
-            Authentication authentication = customAuthenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(request.get("email"), request.get("password")));
-            SecurityContextHolder.getContext().setAuthentication(authentication); //create session
-            return  authentication.toString();
+    @GetMapping(path = "/login")
+    public String showLoginPage(HttpServletRequest request, Model model) {
+        HttpSession session = request.getSession(false);
+        String errorMessage = null;
+        if (session != null) {
+            AuthenticationException ex = (AuthenticationException) session
+                    .getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+            if (ex != null) {
+                errorMessage = ex.getMessage();
+            }
         }
-        catch (Exception ex){
-            return ex.getMessage();
-        }
+        model.addAttribute("error", errorMessage);
+        return "login";
     }
 }

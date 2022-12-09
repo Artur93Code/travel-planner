@@ -50,7 +50,7 @@ public class Travel {
     @JoinColumn(nullable = false, name = "app_user_id")
     private AppUser appUser;
 
-    @OneToMany(mappedBy = "travel"/*,fetch = FetchType.EAGER*/)
+    @OneToMany(mappedBy = "travel")
     private List<Event> events;
 
     public Travel(String title, String description, AppUser appUser) {
@@ -104,7 +104,14 @@ public class Travel {
         this.endDate = endTravelDate;
     }
 
-    public void setTotalCost(Double totalCost) {
+    public void setTotalCost() {
+        double totalCost = 0d;
+        if (this.getEvents() != null) {
+            List<Event> eventList = this.getEvents();
+            for (Event event : eventList) {
+                totalCost += event.getCost();
+            }
+        }
         this.totalCost = totalCost;
     }
 
