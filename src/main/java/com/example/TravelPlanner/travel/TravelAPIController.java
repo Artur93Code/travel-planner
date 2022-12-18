@@ -30,4 +30,14 @@ public class TravelAPIController {
 
         return "Success! Travel added";
     }
+
+    @DeleteMapping(path = "/delete/{travelId}")
+    public String deleteTravel(@PathVariable Long travelId, Model model, Authentication authentication)
+    {
+        AppUser currentUser = appUserService.getLoggedUser(authentication);
+
+        travelService.deleteTravel(currentUser, travelId);
+
+        return "Success! Travel "+travelId+" deleted";
+    }
 }

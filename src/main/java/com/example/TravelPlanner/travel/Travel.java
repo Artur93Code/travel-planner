@@ -50,7 +50,7 @@ public class Travel {
     @JoinColumn(nullable = false, name = "app_user_id")
     private AppUser appUser;
 
-    @OneToMany(mappedBy = "travel")
+    @OneToMany(mappedBy = "travel", cascade = CascadeType.REMOVE)
     private List<Event> events;
 
     public Travel(String title, String description, AppUser appUser) {

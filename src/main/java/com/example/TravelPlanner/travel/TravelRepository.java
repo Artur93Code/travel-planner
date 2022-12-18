@@ -19,6 +19,8 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
 
     List<Travel> findByAppUserId(Long appUserId);
 
+    void deleteById(Long id);
+
     /*@Transactional
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Travel t " +

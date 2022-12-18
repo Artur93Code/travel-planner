@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -16,6 +17,7 @@ import java.util.Map;
 public class TravelController {
     private final AppUserService appUserService;
     private final TravelService travelService;
+    //private final TravelRepository travelRepository; //test
 
     @PostMapping(path = "/travel/add")
     public String addNewTravel(@RequestParam Map<String, String> request, Model model, Authentication authentication)
@@ -25,6 +27,18 @@ public class TravelController {
 
         travelService.setAllTransientTraveParams(currentUser.getId());
         model.addAttribute("user", currentUser);
-        return "home";
+        return "redirect:/home";
+    }
+
+    @PostMapping(path = "/travel/delete/{travelId}")
+    public String deleteTravel(@PathVariable Long travelId, Model model, Authentication authentication)
+    {
+        AppUser currentUser = appUserService.getLoggedUser(authentication);
+
+        travelService.deleteTravel(currentUser, travelId);
+
+        travelService.setAllTransientTraveParams(currentUser.getId());
+        model.addAttribute("user", currentUser);
+        return "redirect:/home";
     }
 }

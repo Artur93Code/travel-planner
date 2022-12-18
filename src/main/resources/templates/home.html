@@ -23,10 +23,7 @@
                     <div class="text-center">
                         <a href="" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalAddTravelForm">Add a Travel</a>
                     </div>
-<!--                    <tr th:each="travel: ${user.travels}">
-                        <td th:text="${travel.title}" />
-                        <td th:text="${travel.description}" />
-                    </tr>-->
+
                     <div th:each="travel: ${user.travels}" class="list-group">
                         <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
                             <div class="d-flex w-100 justify-content-between">
@@ -38,7 +35,12 @@
                                 </small>
                             </div>
                             <p class="mb-1" th:text="${travel.description}"></p>
-                            <small class="text-muted"th:text="${travel.TotalCost}"></small>
+                            <div class="d-flex w-100 justify-content-between">
+                                <small class="text-muted"th:text="${travel.TotalCost}"></small>
+                                <form action="/travel/delete/" method="post" th:action="@{/travel/delete/{travelId}(travelId = ${travel.id})}">
+                                    <button type="submit" class="btn btn-danger">X</button>
+                                </form>
+                            </div>
                         </a>
                     </div>
 

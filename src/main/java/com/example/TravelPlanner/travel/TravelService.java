@@ -5,8 +5,10 @@ import com.example.TravelPlanner.Event.EventRepository;
 import com.example.TravelPlanner.Event.EventService;
 import com.example.TravelPlanner.appuser.AppUser;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,5 +53,30 @@ public class TravelService {
     {
         Travel newTravel = new Travel(title, description, appUser);
         travelRepository.save(newTravel);
+    }
+
+    public void deleteTravel(AppUser currentUser, Long travelId)
+    {
+        try {
+            List<Travel> travelList = currentUser.getTravels();
+
+            //Checks if logged user is the owner (parent) of the travel entity (child) who want delete
+            boolean checkOwner = travelList.stream().filter(o -> o.getId().equals(travelId)).findFirst().isPresent();
+            if (checkOwner) {
+                travelRepository.deleteById(travelId);
+            }
+            else {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "You don't have permission to delete this travel or travel not exist");
+            }
+        }
+        catch (ResponseStatusException e)
+        {
+            if(e.getStatus().equals(HttpStatus.NOT_FOUND)){
+                throw e;
+            }
+            else {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong", e);
+            }
+        }
     }
 }
