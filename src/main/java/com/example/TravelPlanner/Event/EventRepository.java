@@ -12,4 +12,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     //List<Object> findByIdIn(Long travel_id);
     List<Event> findByTravelId(Long travelId);
+
+    void deleteById(Long id);
 }

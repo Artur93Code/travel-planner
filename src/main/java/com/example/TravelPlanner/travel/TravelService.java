@@ -66,7 +66,7 @@ public class TravelService {
                 travelRepository.deleteById(travelId);
             }
             else {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "You don't have permission to delete this travel or travel not exist");
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "You don't have permission to delete this travel or it's not exist");
             }
         }
         catch (ResponseStatusException e)
