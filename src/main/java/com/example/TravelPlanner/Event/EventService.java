@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -59,9 +61,19 @@ public class EventService {
     public void addEvent(String title, EventType eventType, LocalDateTime startDate, LocalDateTime endDate,
                           Double cost, Travel travel)
     {
-        EventType eventType1 = EventType.ACCOMMODATION;
-        Event newEvent = new Event(title, eventType, startDate, endDate,  cost, travel);
-        eventRepository.save(newEvent);
+            //EventType eventType1 = EventType.ACCOMMODATION;
+        try {
+            Exception ex;
+            if (startDate.isAfter(endDate)) {
+                ex = new Exception("Start date must be before end date");
+                throw ex;
+            }
+            Event newEvent = new Event(title, eventType, startDate, endDate, cost, travel);
+            eventRepository.save(newEvent);
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

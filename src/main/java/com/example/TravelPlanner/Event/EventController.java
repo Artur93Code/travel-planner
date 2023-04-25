@@ -12,7 +12,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -40,8 +43,10 @@ public class EventController {
     }
 
     @PostMapping(path = "/event/add")
-    public String addNewEvent(@RequestParam Map<String, String> request, Model model, Authentication authentication)
+    public ModelAndView addNewEvent(@RequestParam Map<String, String> request, Model model,
+                                    Authentication authentication, RedirectAttributes redirectAttributes)
     {
+        ModelAndView modelAndView = new ModelAndView("home");
         AppUser currentUser = appUserService.getLoggedUser(authentication);
         List<Travel> userTravels =currentUser.getTravels();
         //Check if logged user is owner of the travel entity which he wants to add event entity. And if he is then get this travel entity
@@ -49,15 +54,27 @@ public class EventController {
                 .findFirst()
                 .get();
         if(currentTravel != null) {
-            EventType eventType = EventType.valueOf(request.get("eventType"));
-            LocalDateTime startDate = LocalDateTime.parse(request.get("eventStartDate"));
-            LocalDateTime endDate = LocalDateTime.parse(request.get("eventEndDate"));
-            eventService.addEvent(request.get("eventTitle"), eventType,
-                    startDate, endDate, Double.parseDouble(request.get("eventCost")), currentTravel);
+            try {
+                EventType eventType = EventType.valueOf(request.get("eventType"));
+                LocalDateTime startDate = LocalDateTime.parse(request.get("eventStartDate"));
+                LocalDateTime endDate = LocalDateTime.parse(request.get("eventEndDate"));
+
+                eventService.addEvent(request.get("eventTitle"), eventType,
+                        startDate, endDate, Double.parseDouble(request.get("eventCost")), currentTravel);
+            }
+            catch (Exception e)
+            {
+                travelService.setAllTransientTraveParams(currentUser.getId());
+                model.addAttribute("user", currentUser);
+                //modelAndView.addObject("error", "Something went wrong. Please try again");
+                modelAndView.addObject("error", e.getMessage());
+                return modelAndView;
+            }
         }
 
         travelService.setAllTransientTraveParams(currentUser.getId());
+        modelAndView.addObject("success", "Event added!");//test
         model.addAttribute("user", currentUser);
-        return "redirect:/home";
+        return modelAndView;
     }
 }

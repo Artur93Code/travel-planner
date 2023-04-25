@@ -94,7 +94,7 @@ public class Travel {
             List<Event> eventList = this.getEvents();
             for (Event event : eventList)
             {
-                if((endTravelDate==null) || (event.getEndDate().isBefore(endTravelDate)))
+                if((endTravelDate==null) || (event.getEndDate().isAfter(endTravelDate)))
                 {
                     endTravelDate = event.getEndDate();
                 }

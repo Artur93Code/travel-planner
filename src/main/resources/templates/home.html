@@ -23,7 +23,12 @@
                     <div class="text-center">
                         <a href="" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalAddTravelForm">Add a Travel</a>
                     </div>
-
+                    <div th:if="${error != null}">
+                        <div class="alert alert-danger" role="alert" th:text="${error}">error text</div>
+                    </div>
+                    <div th:if="${success != null}">
+                        <div class="alert alert-success" role="alert" th:text="${success}">success text</div>
+                    </div>
                     <div th:each="travel: ${user.travels}" class="list-group">
                         <li class="list-group-item flex-column align-items-start">
                             <div class="d-flex w-100 justify-content-between">
@@ -37,7 +42,8 @@
                             <p class="mb-1" th:text="${travel.description}"></p>
                             <div class="d-flex w-100 justify-content-between">
                             <!--<div class="d-flex w-100 flex-row-reverse justify-content-between">-->
-                                <small class="text-muted"th:text="${travel.TotalCost}"></small>
+                                <!--<small class="text-muted" th:text="'Total cost: ' + ${travel.TotalCost} + 'zł'"></small>-->
+                                <small class="text-muted" th:text="'Total cost: ' + ${#numbers.formatDecimal(travel.TotalCost, 0, 'COMMA', 2, 'POINT')} + 'zł'"></small>
                                 <div class="d-flex flex-row-reverse">
                                 <form action="/travel/delete/" method="post" th:action="@{/travel/delete/{travelId}(travelId = ${travel.id})}">
                                     <button type="submit" class="btn btn-danger">
@@ -133,13 +139,13 @@
                                             <input type="hidden" th:value="${travel.id}" id="eventTravelId" name="eventTravelId">
                                             <div class="form-group">
                                                 <label for="eventTitle" class="col-form-label">Title:</label>
-                                                <input type="text" class="form-control" id="eventTitle" name="eventTitle">
+                                                <input type="text" class="form-control" id="eventTitle" name="eventTitle" required>
                                             </div>
                                             <div class="form-row">
                                                 <div class="form-group col-md-8">
                                                     <label for="eventType">Type</label>
                                                     <select id="eventType" name="eventType" class="form-control">
-                                                        <option selected>Choose...</option>
+                                                        <option selected>Choose</option>
                                                         <option value="SIGHTSEEING">Sightseeing</option>
                                                         <option value="ACCOMMODATION">Accommodation</option>
                                                         <option value="SHOPPING">Shopping</option>
@@ -149,7 +155,7 @@
                                                 </div>
                                                 <div class="form-group col-md-4">
                                                     <label for="eventCost">Cost</label>
-                                                    <input type="text" class="form-control" id="eventCost" name="eventCost">
+                                                    <input type="text" class="form-control" id="eventCost" name="eventCost" pattern="[0-9].{1,8}" required>
                                                 </div>
                                             </div>
                                             <div class="form-row">
@@ -157,14 +163,14 @@
                                                     <label for="eventStartDate">From</label>
                                                     <input type="datetime-local" id="eventStartDate"
                                                            name="eventStartDate" class="form-control"
-                                                           value="2018-06-12T19:30" min="1950-06-07T00:00"
+                                                           th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm')}" min="1950-06-07T00:00"
                                                            max="2150-06-14T00:00">
                                                 </div>
                                                 <div class="form-group col-md-6">
                                                     <label for="eventStartDate">To</label>
                                                     <input type="datetime-local" id="eventEndDate"
                                                            name="eventEndDate" class="form-control"
-                                                           value="2018-06-12T19:30" min="1950-06-07T00:00"
+                                                           th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm')}" min="1950-06-07T00:00"
                                                            max="2150-06-14T00:00">
                                                 </div>
                                             </div>
@@ -182,12 +188,6 @@
 
                 </div>
                 <p th:text="${#dates.createToday()}"></p>
-                <div th:if="${error != null}">
-                    <div class="alert alert-danger" role="alert" th:text="${error}">error text</div>
-                </div>
-                <div th:if="${success != null}">
-                    <div class="alert alert-success" role="alert" th:text="${success}">success text</div>
-                </div>
                 <form th:action="@{/logout}" method="post">
                     <button type="submit" class="btn btn-secondary">Logout</button>
                 </form>
@@ -220,7 +220,6 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Send message</button>
                     </div>
                 </div>
             </div>
