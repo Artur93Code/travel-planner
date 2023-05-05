@@ -37,7 +37,7 @@ public class EventController {
 
         eventService.deleteEvent(currentUser, eventId);
 
-        travelService.setAllTransientTraveParams(currentUser.getId());
+        travelService.setAllTransientTravelParams(currentUser.getId());
         model.addAttribute("user", currentUser);
         return "redirect:/home";
     }
@@ -46,7 +46,7 @@ public class EventController {
     public ModelAndView addNewEvent(@RequestParam Map<String, String> request, Model model,
                                     Authentication authentication, RedirectAttributes redirectAttributes)
     {
-        ModelAndView modelAndView = new ModelAndView("home");
+        ModelAndView modelAndView = new ModelAndView("travel");
         AppUser currentUser = appUserService.getLoggedUser(authentication);
         List<Travel> userTravels =currentUser.getTravels();
         //Check if logged user is owner of the travel entity which he wants to add event entity. And if he is then get this travel entity
@@ -64,17 +64,59 @@ public class EventController {
             }
             catch (Exception e)
             {
-                travelService.setAllTransientTraveParams(currentUser.getId());
+                travelService.setAllTransientTravelParams(currentUser.getId());
                 model.addAttribute("user", currentUser);
+                model.addAttribute("travel", currentTravel);
                 //modelAndView.addObject("error", "Something went wrong. Please try again");
                 modelAndView.addObject("error", e.getMessage());
                 return modelAndView;
             }
         }
 
-        travelService.setAllTransientTraveParams(currentUser.getId());
+        travelService.setAllTransientTravelParams(currentUser.getId());
         modelAndView.addObject("success", "Event added!");//test
         model.addAttribute("user", currentUser);
+        model.addAttribute("travel", currentTravel);
         return modelAndView;
+    }
+
+    @PostMapping(path="/event/update/{eventId}")
+    public ModelAndView updateEvent(@PathVariable Long eventId, @RequestParam Map<String, String> request, Model model,
+                            Authentication authentication, RedirectAttributes redirectAttributes) {
+
+        ModelAndView modelAndView = new ModelAndView("travel");
+        AppUser currentUser = appUserService.getLoggedUser(authentication);
+        List<Travel> userTravels =currentUser.getTravels();
+        //Check if logged user is owner of the travel entity which he wants to add event entity. And if he is then get this travel entity
+        Travel currentTravel = userTravels.stream().filter(o -> o.getId().equals(Long.parseLong(request.get("eventEditTravelId"))))
+                .findFirst()
+                .get();
+
+        if(currentTravel != null) {
+            try {
+                //long eventId = Long.parseLong(request.get("eventEditId"));
+                EventType eventType = EventType.valueOf(request.get("eventEditType"));
+                LocalDateTime startDate = LocalDateTime.parse(request.get("eventEditStartDate"));
+                LocalDateTime endDate = LocalDateTime.parse(request.get("eventEditEndDate"));
+
+                eventService.updateEvent(eventId,request.get("eventEditTitle"), eventType,
+                        startDate, endDate, Double.parseDouble(request.get("eventEditCost")), currentTravel);
+            }
+            catch (Exception e)
+            {
+                travelService.setAllTransientTravelParams(currentUser.getId());
+                model.addAttribute("user", currentUser);
+                model.addAttribute("travel", currentTravel);
+                modelAndView.addObject("error", e.getMessage());
+                return modelAndView;
+            }
+        }
+
+        travelService.setAllTransientTravelParams(currentUser.getId());
+        modelAndView.addObject("success", "Event edited!");
+        model.addAttribute("travel", currentTravel);
+        model.addAttribute("user", currentUser);
+        return modelAndView;
+
     }
 }

@@ -15,7 +15,7 @@ import java.util.Optional;
 @Repository
 public interface TravelRepository extends JpaRepository<Travel, Long> {
 
-    Optional<Travel> findById(int id);
+    Optional<Travel> findById(Long id);
 
     List<Travel> findByAppUserId(Long appUserId);
 

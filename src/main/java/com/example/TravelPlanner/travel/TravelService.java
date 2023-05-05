@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -25,7 +26,22 @@ public class TravelService {
         return  travelRepository.findByAppUserId(appUserId);
     }
 
-    public void  setAllTransientTraveParams(Long appUserId)
+    public Travel getCustomTravel(Long travelId) throws Exception {
+
+        Optional<Travel> optionalTravel = travelRepository.findById(travelId);
+        try{
+            if(optionalTravel.isEmpty()){
+                //Travel customTravel = optionalTravel.get();
+                throw new Exception("Travel not exist");
+            }
+        }
+        catch(Exception e){
+            throw e;
+        }
+        return optionalTravel.get();
+    }
+
+    public void  setAllTransientTravelParams(Long appUserId)
     {
         List<Travel> travelList = travelRepository.findByAppUserId(appUserId);
         for (Travel travel : travelList)

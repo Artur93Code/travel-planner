@@ -37,7 +37,7 @@ public class AppUserController {
     @GetMapping(path = "/home")
     public String showHomePage(Authentication authentication, Model model){
         AppUser currentUser = appUserService.getLoggedUser(authentication);
-        travelService.setAllTransientTraveParams(currentUser.getId());
+        travelService.setAllTransientTravelParams(currentUser.getId());
         model.addAttribute("user", currentUser);
 
         return "home";

@@ -20,14 +20,14 @@
                 <div sec:authorize="isAuthenticated()">
                     <h1 style="text-align: center;">Welcome <span th:text="${user.firstName}"></span>!</h1>
                     <br>
-                    <div class="text-center">
-                        <a href="" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalAddTravelForm">Add a Travel</a>
-                    </div>
                     <div th:if="${error != null}">
                         <div class="alert alert-danger" role="alert" th:text="${error}">error text</div>
                     </div>
                     <div th:if="${success != null}">
                         <div class="alert alert-success" role="alert" th:text="${success}">success text</div>
+                    </div>
+                    <div class="text-center">
+                        <a href="" class="btn btn-success btn-block" data-toggle="modal" data-target="#modalAddTravelForm">Add a Travel</a>
                     </div>
                     <div th:each="travel: ${user.travels}" class="list-group">
                         <li class="list-group-item flex-column align-items-start">
@@ -52,8 +52,16 @@
                                         </svg>
                                     </button>
                                 </form>
-                                <form>
+<!--                                <form>
                                     <button type="button" class="btn btn-primary" data-toggle="modal" th:data-target="'#exampleModalScrollable'+${travel.id}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-event" viewBox="0 0 16 16">
+                                            <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
+                                            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                                        </svg>
+                                    </button>
+                                </form>-->
+                                <form method="get" th:action="@{/travel/details/{travelId}(travelId = ${travel.id})}">
+                                    <button type="submit" class="btn btn-primary">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-event" viewBox="0 0 16 16">
                                             <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
                                             <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
@@ -110,9 +118,77 @@
                                                                 </svg>
                                                             </button>
                                                         </form>
+                                                        <form>
+                                                            <button type="button" class="btn btn-primary" data-toggle="modal" th:data-target="'#editEventModal'+${travel.id}">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                                                                </svg>
+                                                            </button>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </li>
+                                            <!-- EDIT EVENT MODAL FORM START -->
+                                            <div class="modal fade" th:id="'editEventModal'+${travel.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-scrollable" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="editEventModalTitle" th:text="'Edit event '+${event.title}"></h5>
+                                                            <!--<h5 class="modal-title" id="exampleModalScrollableTitle">Modal title</h5>-->
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form action="/event/edit" method="post">
+                                                                <input type="hidden" th:value="${travel.id}" id="eventEditTravelId" name="eventTravelId">
+                                                                <div class="form-group">
+                                                                    <label for="eventTitle" class="col-form-label">Title:</label>
+                                                                    <input type="text" class="form-control" id="eventEditTitle" name="eventTitle" required>
+                                                                </div>
+                                                                <div class="form-row">
+                                                                    <div class="form-group col-md-8">
+                                                                        <label for="eventType">Type</label>
+                                                                        <select id="eventType" name="eventType" class="form-control">
+                                                                            <option selected>Choose</option>
+                                                                            <option value="SIGHTSEEING">Sightseeing</option>
+                                                                            <option value="ACCOMMODATION">Accommodation</option>
+                                                                            <option value="SHOPPING">Shopping</option>
+                                                                            <option value="EATING">Eating</option>
+                                                                            <option value="TRIP">Trip</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="form-group col-md-4">
+                                                                        <label for="eventCost">Cost</label>
+                                                                        <input type="text" class="form-control" id="eventEditCost" name="eventCost" pattern="[0-9].{1,8}" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-row">
+                                                                    <div class="form-group col-md-6">
+                                                                        <label for="eventStartDate">From</label>
+                                                                        <input type="datetime-local" id="eventEditStartDate"
+                                                                               name="eventStartDate" class="form-control"
+                                                                               th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm')}" min="1950-06-07T00:00"
+                                                                               max="2150-06-14T00:00">
+                                                                    </div>
+                                                                    <div class="form-group col-md-6">
+                                                                        <label for="eventStartDate">To</label>
+                                                                        <input type="datetime-local" id="eventEditEndDate"
+                                                                               name="eventEndDate" class="form-control"
+                                                                               th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm')}" min="1950-06-07T00:00"
+                                                                               max="2150-06-14T00:00">
+                                                                    </div>
+                                                                </div>
+                                                                <button type="submit" class="btn btn-primary">Edit Event</button>
+                                                            </form>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- EDIT EVENT MODAL FORM END-->
                                         </div>
                                     </div>
                                     <div class="modal-footer">

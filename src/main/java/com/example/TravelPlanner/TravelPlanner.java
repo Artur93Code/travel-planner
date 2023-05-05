@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @SpringBootApplication
@@ -35,6 +36,13 @@ public class TravelPlanner {
 									  EventService eventService)
 	{
 		return args -> {
+			LocalDateTime startDate = LocalDateTime.now();
+			LocalDateTime endDate = LocalDateTime.now().plusHours(2);
+			DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+			String formatStartDateTime = startDate.format(format);
+			String formatEndDateTime = endDate.format(format);
+
+
 			AppUser testUser = new AppUser("Krzysztof",
 					"Kowalski",
 					"email@wp.pl",
@@ -50,8 +58,9 @@ public class TravelPlanner {
 
 			Event testEvent = new Event("Visit on London Brigde",
 					EventType.SIGHTSEEING,
-					LocalDateTime.now(),
-					LocalDateTime.now().plusHours(2),
+					//LocalDateTime.now(),
+					LocalDateTime.parse(formatStartDateTime, format),
+					LocalDateTime.parse(formatEndDateTime, format),
 					130d,
 					testTravel);
 			eventRepository.save(testEvent);

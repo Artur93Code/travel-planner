@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -73,6 +74,23 @@ public class EventService {
         }
         catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void updateEvent(long id, String title, EventType eventType, LocalDateTime startDate, LocalDateTime endDate,
+                         Double cost, Travel travel)
+    {
+        Optional <Event> findEvent = eventRepository.findById(id);
+        if(findEvent.isPresent()){
+            Event editedEvent = findEvent.get();
+            editedEvent.setTitle(title);
+            editedEvent.setEventType(eventType);
+            editedEvent.setStartDate(startDate);
+            editedEvent.setEndDate(endDate);
+            editedEvent.setCost(cost);
+            editedEvent.setTravel(travel);
+
+            eventRepository.save(editedEvent);
         }
     }
 
