@@ -15,18 +15,24 @@
     <title>Travel Planner</title>
   </head>
   <body>
-        <div class="row justify-content-center">
-            <div class="col-sm-auto">
+        <div class="container">
+            <div class="row justify-content-md-center">
+                <div class="col-md-auto">
                 <div sec:authorize="isAuthenticated()">
                     <h1 style="text-align: center;">Welcome <span th:text="${user.firstName}"></span>!</h1>
                 </div>
-                <div th:if="${error != null}">
-                    <div class="alert alert-danger" role="alert" th:text="${error}">error text</div>
-                </div>
-                <div th:if="${success != null}">
-                    <div class="alert alert-success" role="alert" th:text="${success}">success text</div>
-                </div>
-
+                    <div th:if="${error != null}">
+                        <div class="alert alert-success alert-dismissible fade show" role="alert" th:text="${error}">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <span th:text="${error}"></span>
+                        </div>
+                    </div>
+                    <div th:if="${success != null}">
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <span th:text="${success}"></span>
+                        </div>
+                    </div>
                 <div class="d-flex w-100 justify-content-between">
                     <h5 class="mb-1" th:text="${travel.title}"></h5>
                     <small class="text-muted">
@@ -44,7 +50,7 @@
                 </div>
 
 
-                <div class="modal-body">
+                <div>
                     <form>
                         <button type="button" class="btn btn-success btn-block" data-toggle="modal" th:data-target="'#addEventModal'+${travel.id}">
                             ADD EVENT
@@ -211,7 +217,11 @@
                     </div>
                     <!-- ADD EVENT MODAL FORM END-->
                 </div>
-
+                    <p th:text="${#dates.createToday()}"></p>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="btn btn-secondary">Logout</button>
+                    </form>
+                </div>
             </div>
         </div>
 

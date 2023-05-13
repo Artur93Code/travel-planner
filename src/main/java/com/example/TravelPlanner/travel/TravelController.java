@@ -1,5 +1,6 @@
 package com.example.TravelPlanner.travel;
 
+import com.example.TravelPlanner.Event.EventType;
 import com.example.TravelPlanner.appuser.AppUser;
 import com.example.TravelPlanner.appuser.AppUserService;
 import lombok.AllArgsConstructor;
@@ -11,7 +12,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -60,5 +64,38 @@ public class TravelController {
         catch (Exception e){}
 
         return "travel";
+    }
+
+    @PostMapping(path="/travel/update/{travelId}")
+    public ModelAndView updateEvent(@PathVariable Long travelId, @RequestParam Map<String, String> request, Model model,
+                                    Authentication authentication, RedirectAttributes redirectAttributes) {
+
+        ModelAndView modelAndView = new ModelAndView("home");
+        AppUser currentUser = appUserService.getLoggedUser(authentication);
+        List<Travel> userTravels =currentUser.getTravels();
+
+
+        if(userTravels != null) {
+            try {
+                //long travelId = Long.parseLong(request.get("travelId"));
+                String title = request.get("travelEditTitle");
+                String description = request.get("travelEditDescription");
+
+                travelService.updateTravel(currentUser,travelId, title, description);
+            }
+            catch (Exception e)
+            {
+                travelService.setAllTransientTravelParams(currentUser.getId());
+                model.addAttribute("user", currentUser);
+                modelAndView.addObject("error", e.getMessage());
+                return modelAndView;
+            }
+        }
+
+        travelService.setAllTransientTravelParams(currentUser.getId());
+        modelAndView.addObject("success", "Travel edited!");
+        model.addAttribute("user", currentUser);
+        return modelAndView;
+
     }
 }

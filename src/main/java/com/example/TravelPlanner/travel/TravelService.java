@@ -3,6 +3,7 @@ package com.example.TravelPlanner.travel;
 import com.example.TravelPlanner.Event.Event;
 import com.example.TravelPlanner.Event.EventRepository;
 import com.example.TravelPlanner.Event.EventService;
+import com.example.TravelPlanner.Event.EventType;
 import com.example.TravelPlanner.appuser.AppUser;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -93,6 +94,24 @@ public class TravelService {
             else {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong", e);
             }
+        }
+    }
+
+    public void updateTravel(AppUser currentUser,long id, String title, String description)
+    {
+
+        List<Travel> travelList = currentUser.getTravels();
+
+        //Checks if logged user is the owner (parent) of the travel entity (child) who want delete
+        boolean checkOwner = travelList.stream().filter(o -> o.getId().equals(id)).findFirst().isPresent();
+        Optional <Travel> findTravel = travelRepository.findById(id);
+
+        if (checkOwner) {
+            Travel editedTravel = findTravel.get();
+            editedTravel.setTitle(title);
+            editedTravel.setDescription(description);
+
+            travelRepository.save(editedTravel);
         }
     }
 }
